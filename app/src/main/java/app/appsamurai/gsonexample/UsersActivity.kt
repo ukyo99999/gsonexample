@@ -9,12 +9,14 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
+import com.google.gson.reflect.TypeToken
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class UsersActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_users)
 
         val queue = Volley.newRequestQueue(this)
         val url = "https://jsonplaceholder.typicode.com/users"
@@ -25,13 +27,16 @@ class MainActivity : AppCompatActivity() {
 
                 try {
                     val gson = Gson()
-                    val users = gson.fromJson(response.toString(), UserGson::class.java)
+                    val type = object : TypeToken<ArrayList<UserGson>>() {}.type
+                    val users = gson.fromJson<ArrayList<UserGson>>(response, type)
+                    Log.d("users[0].name", users[0].name)
+
                 } catch (e: JsonParseException) {
                     Log.e("Gson JsonParseException", e.toString())
                 }
             },
             Response.ErrorListener { error ->
-                Log.e("ErrorListener", error.toString())
+                Log.e("error", error.toString())
             })
 
         queue.add(stringRequest)
